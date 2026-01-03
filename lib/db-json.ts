@@ -85,3 +85,42 @@ export function addCase(newCase: Omit<Case, 'id' | 'createdAt' | 'updatedAt'>): 
     writeDb(db);
     return createdCase;
 }
+
+export function updateCase(id: number, updates: Partial<Case>): Case | null {
+    const db = readDb();
+    const index = db.cases.findIndex(c => c.id === id);
+    if (index === -1) return null;
+
+    db.cases[index] = {
+        ...db.cases[index],
+        ...updates,
+        updatedAt: new Date()
+    };
+
+    // Update stats if status changed
+    // For simplicity, recalculating all stats
+    const cases = db.cases;
+    db.stats.pending = cases.filter(c => c.status === 'PENDING').length;
+    db.stats.investigating = cases.filter(c => c.status === 'INVESTIGATING').length;
+    db.stats.resolved = cases.filter(c => c.status === 'RESOLVED').length;
+
+    writeDb(db);
+    return db.cases[index];
+}
+
+export function deleteCase(id: number): boolean {
+    const db = readDb();
+    const initialLength = db.cases.length;
+    db.cases = db.cases.filter(c => c.id !== id);
+
+    if (db.cases.length === initialLength) return false;
+
+    // Recalculate stats
+    const cases = db.cases;
+    db.stats.pending = cases.filter(c => c.status === 'PENDING').length;
+    db.stats.investigating = cases.filter(c => c.status === 'INVESTIGATING').length;
+    db.stats.resolved = cases.filter(c => c.status === 'RESOLVED').length;
+
+    writeDb(db);
+    return true;
+}

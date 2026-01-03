@@ -36,14 +36,19 @@ export default function DashboardPage() {
 
             <div className={styles.grid}>
                 <Card className={styles.mapPreview} variant="glass">
-                    <h3>Live Monitoring Map</h3>
-                    <div className={styles.placeholderMap} style={{ overflow: 'hidden', position: 'relative' }}>
-                        <MapPreviewWrapper />
+                    <div className={styles.cardHeader}>
+                        <h3>Live Monitoring Map</h3>
+                        <span className={styles.liveIndicator}>● LIVE</span>
+                    </div>
+                    <div className={styles.placeholderMap} style={{ overflow: 'hidden', position: 'relative', borderRadius: 'var(--radius-md)' }}>
+                        <MapPreviewWrapper interactive={true} />
                     </div>
                 </Card>
 
                 <Card className={styles.activityFeed}>
-                    <h3>Recent Activity</h3>
+                    <div className={styles.cardHeader}>
+                        <h3>Recent Activity</h3>
+                    </div>
                     <div className={styles.activityList}>
                         <div className={styles.activityItem}>
                             <div className={styles.activityDot}></div>

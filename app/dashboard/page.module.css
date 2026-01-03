@@ -61,6 +61,26 @@
     color: var(--color-text-secondary);
 }
 
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.liveIndicator {
+    color: var(--color-danger);
+    font-weight: 600;
+    font-size: 0.75rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
 .recentActivity {
     display: flex;
     flex-direction: column;
@@ -86,16 +106,16 @@
     border-bottom: none;
 }
 
-.dot {
+.activityDot {
     width: 8px;
     height: 8px;
-    background-color: var(--color-danger);
+    background-color: var(--color-accent);
     border-radius: 50%;
-    margin-top: 6px;
-    box-shadow: 0 0 8px var(--color-danger);
+    margin-top: 8px;
+    box-shadow: 0 0 8px var(--color-accent-glow);
 }
 
-.activityTitle {
+.activityText {
     font-size: 0.9rem;
     color: var(--color-text-primary);
     margin-bottom: 0.25rem;

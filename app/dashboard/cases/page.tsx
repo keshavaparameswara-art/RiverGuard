@@ -18,6 +18,10 @@ export default function CasesPage() {
     const [selectedCase, setSelectedCase] = useState<Case | null>(null);
     const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
+    // Search and Filter State
+    const [searchQuery, setSearchQuery] = useState("");
+    const [showActiveOnly, setShowActiveOnly] = useState(false);
+
     useEffect(() => {
         getCases().then(data => {
             setCases(data);
@@ -30,18 +34,33 @@ export default function CasesPage() {
         setIsDetailsOpen(true);
     };
 
+    const filteredCases = cases.filter(c => {
+        const matchesSearch = c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            c.id.toString().includes(searchQuery);
+        const matchesFilter = showActiveOnly ? c.status !== 'RESOLVED' : true;
+        return matchesSearch && matchesFilter;
+    });
+
     return (
         <div className={styles.container}>
             <div className={styles.header}>
                 <div className={styles.searchBar}>
-                    <Input placeholder="Search cases..." />
+                    <Input
+                        placeholder="Search cases..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
                     <Button variant="secondary" className={styles.iconBtn}>
                         <Search size={20} />
                     </Button>
                 </div>
-                <Button variant="secondary" className={styles.filterBtn}>
+                <Button
+                    variant={showActiveOnly ? "primary" : "secondary"}
+                    className={styles.filterBtn}
+                    onClick={() => setShowActiveOnly(!showActiveOnly)}
+                >
                     <Filter size={18} />
-                    Filter
+                    {showActiveOnly ? "Active Only" : "All Cases"}
                 </Button>
                 <Button onClick={() => setIsModalOpen(true)}>New Case</Button>
             </div>
@@ -49,9 +68,9 @@ export default function CasesPage() {
             <div className={styles.caseList}>
                 {isLoading ? (
                     <p>Loading cases...</p>
-                ) : cases.length === 0 ? (
-                    <p>No cases found. Create one to get started.</p>
-                ) : cases.map((c) => (
+                ) : filteredCases.length === 0 ? (
+                    <p>No cases found matching your criteria.</p>
+                ) : filteredCases.map((c) => (
                     <Card key={c.id} className={styles.caseItem}>
                         <div className={styles.caseIcon} data-severity={c.severity}>
                             <AlertCircle size={24} />

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card } from '@/components/ui/Card';
@@ -27,6 +27,18 @@ export function NewCaseModal({ isOpen, onClose, initialLat, initialLng }: NewCas
         severity: 'LOW',
         status: 'PENDING'
     });
+
+    // Update form data when initial coordinates change or modal opens
+    // This fixes the issue where subsequent clicks on the map didn't update the modal coordinates
+    useEffect(() => {
+        if (isOpen && initialLat && initialLng) {
+            setFormData(prev => ({
+                ...prev,
+                latitude: initialLat,
+                longitude: initialLng
+            }));
+        }
+    }, [isOpen, initialLat, initialLng]);
 
     if (!isOpen) return null;
 

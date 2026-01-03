@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/Card";
 import styles from "./page.module.css";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { NewCaseModal } from "@/components/cases/NewCaseModal";
 import dynamic from 'next/dynamic';
 
@@ -16,16 +16,57 @@ export default function MapPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCoords, setSelectedCoords] = useState<{ lat: number, lng: number } | undefined>(undefined);
 
+    const [cases, setCases] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        import('@/lib/api').then(({ getCases }) => {
+            getCases().then(data => {
+                setCases(data);
+                setIsLoading(false);
+            });
+        });
+    }, []);
+
     const handleMapClick = (lat: number, lng: number) => {
         setSelectedCoords({ lat, lng });
         setIsModalOpen(true);
     };
 
-    // Mock markers for existing cases
-    const markers = useMemo(() => [
-        { lat: 28.6139, lng: 77.2090, title: "Case #1" },
-        { lat: 28.5355, lng: 77.3910, title: "Case #2" }
-    ], []);
+    // Transform cases to markers
+    const markers = useMemo(() => cases.map(c => ({
+        // Use random offset for demo if lat/lng missing, or real lat/lng if available.
+        // Assuming Case type has lat/lng or we mock it for the demo if not present.
+        // For MVP we will assume cases have location or default to Delhi region.
+        lat: c.latitude || 28.6139 + (Math.random() - 0.5) * 0.1,
+        lng: c.longitude || 77.2090 + (Math.random() - 0.5) * 0.1,
+        title: `Case #${c.id}: ${c.title}`
+    })), [cases]);
+
+    const [center, setCenter] = useState<[number, number]>([28.6139, 77.2090]); // Default to Delhi
+
+    useEffect(() => {
+        const updateCenter = () => {
+            const savedSettings = localStorage.getItem('riverguard_settings');
+            if (savedSettings) {
+                const { region } = JSON.parse(savedSettings);
+                if (region) {
+                    // Dynamic import or check to avoid server-side issues
+                    import('@/lib/regions').then(({ getRegionCoords }) => {
+                        const coords = getRegionCoords(region);
+                        if (coords) setCenter(coords);
+                    });
+                }
+            }
+        };
+
+        // Initial check
+        updateCenter();
+
+        // Listen for storage changes
+        window.addEventListener('storage', updateCenter);
+        return () => window.removeEventListener('storage', updateCenter);
+    }, []);
 
     return (
         <div className={styles.container}>
@@ -39,7 +80,8 @@ export default function MapPage() {
 
                 <div className={styles.mapWrapper}>
                     <LeafletMap
-                        center={[28.6139, 77.2090]}
+                        key={center.join(',')} // Force re-render on center change
+                        center={center}
                         zoom={12}
                         markers={markers}
                         onMapClick={handleMapClick}

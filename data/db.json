@@ -1,21 +1,60 @@
 {
   "cases": [
     {
+      "title": "chfgfcghfgh",
+      "description": "xfhgcfgh",
+      "latitude": 18.080589964407164,
+      "longitude": 78.97350311279297,
+      "severity": "LOW",
+      "status": "PENDING",
+      "imageUrlBefore": "/placeholder-before.jpg",
+      "imageUrlAfter": "/placeholder-after.jpg",
+      "id": 4,
+      "createdAt": "2026-01-03T04:51:10.947Z",
+      "updatedAt": "2026-01-03T04:51:10.947Z"
+    },
+    {
+      "title": "hfghcfgh",
+      "description": "hfcghfcgh",
+      "latitude": 18.104413341539512,
+      "longitude": 79.01950836181642,
+      "severity": "MEDIUM",
+      "status": "PENDING",
+      "imageUrlBefore": "/placeholder-before.jpg",
+      "imageUrlAfter": "/placeholder-after.jpg",
+      "id": 3,
+      "createdAt": "2026-01-03T04:51:00.175Z",
+      "updatedAt": "2026-01-03T04:51:00.175Z"
+    },
+    {
+      "title": "dxfhhjghk",
+      "description": "fcghtfhdfgh",
+      "latitude": 17.51310571771942,
+      "longitude": 78.60168457031251,
+      "severity": "HIGH",
+      "status": "PENDING",
+      "imageUrlBefore": "/placeholder-before.jpg",
+      "imageUrlAfter": "/placeholder-after.jpg",
+      "id": 2,
+      "createdAt": "2026-01-03T04:50:51.695Z",
+      "updatedAt": "2026-01-03T04:50:51.695Z"
+    },
+    {
       "id": 1,
       "title": "Unauthorized Construction in Zone A",
       "description": "New concrete structure detected 15m from riverbank.",
       "latitude": 28.6139,
       "longitude": 77.209,
-      "status": "PENDING",
+      "status": "RESOLVED",
       "severity": "HIGH",
       "createdAt": "2026-01-03T01:45:54.604Z",
-      "updatedAt": "2026-01-03T01:45:54.604Z",
+      "updatedAt": "2026-01-03T04:50:27.509Z",
       "zoneId": 1
     }
   ],
   "stats": {
-    "pending": 1,
+    "pending": 3,
     "investigating": 0,
-    "resolved": 0
+    "resolved": 1
   }
 }

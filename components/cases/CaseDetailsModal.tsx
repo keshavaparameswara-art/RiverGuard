@@ -1,10 +1,11 @@
-'use client';
-
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import styles from './CaseDetailsModal.module.css';
 import { X, MapPin, Calendar, Activity } from 'lucide-react';
 import { Case } from '@/types';
+import { updateCaseStatus } from '@/lib/api';
+import { useRouter } from 'next/navigation';
 
 interface CaseDetailsModalProps {
     caseData: Case | null;
@@ -13,10 +14,55 @@ interface CaseDetailsModalProps {
 }
 
 export function CaseDetailsModal({ caseData, isOpen, onClose }: CaseDetailsModalProps) {
-    if (!isOpen || !caseData) return null;
+    const [status, setStatus] = useState(caseData?.status || 'PENDING');
+    const [isUpdating, setIsUpdating] = useState(false);
+    const router = useRouter();
+
+    useEffect(() => {
+        if (caseData) {
+            setStatus(caseData.status);
+        }
+    }, [caseData]);
+
+    const handleUpdateStatus = async () => {
+        if (!caseData) return;
+        setIsUpdating(true);
+        const success = await updateCaseStatus(caseData.id, status);
+        setIsUpdating(false);
+        if (success) {
+            // Ideally notify user of success
+            onClose();
+            // Force refresh to show new status in list
+            window.location.reload();
+        }
+    };
+
+    if (!isOpen || !caseData) {
+        return null;
+    }
+
+    const handleDelete = async () => {
+        if (!caseData || !confirm("Are you sure you want to delete this case? This action cannot be undone.")) return;
+
+        setIsUpdating(true); // Re-using isUpdating for loading state
+        // Dynamic import to avoid circular dependency issues if any
+        const { deleteCase } = await import('@/lib/api');
+        const success = await deleteCase(caseData.id);
+        setIsUpdating(false);
+
+        if (success) {
+            onClose();
+            window.location.reload();
+        } else {
+            alert("Failed to delete case.");
+        }
+    };
 
     return (
-        <div className={styles.overlay}>
+        <div className={styles.overlay} onClick={(e) => {
+            // Close on click outside
+            if (e.target === e.currentTarget) onClose();
+        }}>
             <Card className={styles.modal} variant="glass">
                 <div className={styles.header}>
                     <h2>Case #{caseData.id}</h2>
@@ -53,8 +99,27 @@ export function CaseDetailsModal({ caseData, isOpen, onClose }: CaseDetailsModal
                 </div>
 
                 <div className={styles.actions}>
+                    <Button variant="ghost" style={{ color: 'var(--color-danger)', borderColor: 'var(--color-danger)' }} onClick={handleDelete} disabled={isUpdating}>
+                        Delete Case
+                    </Button>
+                    <div style={{ flex: 1 }}></div>
                     <Button variant="secondary" onClick={onClose}>Close</Button>
-                    <Button variant="primary">Update Status</Button>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <select
+                            className={styles.statusSelect}
+                            value={status}
+                            onChange={(e) => setStatus(e.target.value as any)}
+                            style={{ padding: '0.5rem', borderRadius: '4px', background: 'var(--card-bg)', color: 'var(--text-primary)', border: '1px solid var(--border-color)' }}
+                        >
+                            <option value="PENDING">Pending</option>
+                            <option value="INVESTIGATING">Investigating</option>
+                            <option value="RESOLVED">Resolved</option>
+                            <option value="FALSE_ALARM">False Alarm</option>
+                        </select>
+                        <Button variant="primary" onClick={handleUpdateStatus} disabled={isUpdating}>
+                            {isUpdating ? 'Updating...' : 'Update Status'}
+                        </Button>
+                    </div>
                 </div>
             </Card>
         </div>
