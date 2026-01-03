@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import styles from "./Shell.module.css";
 import { ShieldAlert, LayoutDashboard, Map, FileText, Settings, LogOut, Menu } from "lucide-react";
+import { signOut } from "next-auth/react";
 
 interface ShellProps {
     children: ReactNode;
@@ -47,7 +48,7 @@ export function Shell({ children }: ShellProps) {
                 </nav>
 
                 <div className={styles.footer}>
-                    <button className={styles.logoutBtn}>
+                    <button className={styles.logoutBtn} onClick={() => signOut({ callbackUrl: '/login' })}>
                         <LogOut size={20} />
                         <span>Sign Out</span>
                     </button>
