@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("PUBLIC") // ADMIN, INSPECTOR, PUBLIC
+  cases     Case[]
+  createdAt DateTime @default(now())
+}
+
+model Zone {
+  id          Int      @id @default(autoincrement())
+  name        String
+  coordinates String   // JSON string of lat/lng points
+  createdAt   DateTime @default(now())
+  cases       Case[]
+}
+
+model Case {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  latitude    Float
+  longitude   Float
+  status      String   @default("PENDING") // PENDING, INVESTIGATING, VERIFIED, RESOLVED
+  severity    String   @default("LOW")     // LOW, MEDIUM, HIGH
+  imageUrlBefore String?
+  imageUrlAfter  String?
+  
+  zoneId      Int?
+  zone        Zone?    @relation(fields: [zoneId], references: [id])
+  
+  inspectorId Int?
+  inspector   User?    @relation(fields: [inspectorId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  auditLogs   AuditLog[]
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  action    String
+  details   String?
+  caseId    Int?
+  case      Case?    @relation(fields: [caseId], references: [id])
+  createdAt DateTime @default(now())
+}

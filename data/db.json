@@ -1,0 +1,21 @@
+{
+  "cases": [
+    {
+      "id": 1,
+      "title": "Unauthorized Construction in Zone A",
+      "description": "New concrete structure detected 15m from riverbank.",
+      "latitude": 28.6139,
+      "longitude": 77.209,
+      "status": "PENDING",
+      "severity": "HIGH",
+      "createdAt": "2026-01-03T01:45:54.604Z",
+      "updatedAt": "2026-01-03T01:45:54.604Z",
+      "zoneId": 1
+    }
+  ],
+  "stats": {
+    "pending": 1,
+    "investigating": 0,
+    "resolved": 0
+  }
+}

@@ -1,0 +1,22 @@
+.card {
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Variants */
+.default {
+    background-color: var(--color-bg-secondary);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.glass {
+    background-color: var(--color-bg-glass);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.bordered {
+    background-color: transparent;
+    border: 1px solid var(--color-bg-secondary);
+}
