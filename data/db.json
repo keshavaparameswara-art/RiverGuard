@@ -1,17 +1,30 @@
 {
   "cases": [
     {
+      "title": "case 24",
+      "description": "this is it",
+      "latitude": 21.297734258970337,
+      "longitude": 81.8878025570699,
+      "severity": "LOW",
+      "status": "PENDING",
+      "imageUrlBefore": "/uploads/before-1767772948170-satellite-2025-12-07.png",
+      "imageUrlAfter": "/placeholder-after.jpg",
+      "id": 3,
+      "createdAt": "2026-01-07T08:02:28.173Z",
+      "updatedAt": "2026-01-07T08:02:55.195Z"
+    },
+    {
       "title": "Case 23",
       "description": "A facility is making moves on getting into the riverbed without Gov permission.",
       "latitude": 21.276335426192215,
       "longitude": 81.84986114501955,
       "severity": "LOW",
-      "status": "INVESTIGATING",
+      "status": "RESOLVED",
       "imageUrlBefore": "/uploads/before-1767770018445-Screenshot 2026-01-07 124259.png",
       "imageUrlAfter": "/placeholder-after.jpg",
       "id": 2,
       "createdAt": "2026-01-07T07:13:38.458Z",
-      "updatedAt": "2026-01-07T07:14:10.672Z"
+      "updatedAt": "2026-01-07T08:05:25.323Z"
     },
     {
       "id": 1,
@@ -27,8 +40,8 @@
     }
   ],
   "stats": {
-    "pending": 0,
-    "investigating": 1,
-    "resolved": 1
+    "pending": 1,
+    "investigating": 0,
+    "resolved": 2
   }
 }

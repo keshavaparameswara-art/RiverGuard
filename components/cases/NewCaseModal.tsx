@@ -63,9 +63,22 @@ export function NewCaseModal({ isOpen, onClose, initialLat, initialLng, preSelec
         // If we have a pre-selected satellite image, download it and convert to File
         if (preSelectedImage && !imageBefore) {
             try {
-                const response = await fetch(preSelectedImage.url);
-                const blob = await response.blob();
-                finalImageBefore = new File([blob], `satellite-${preSelectedImage.date}.jpg`, { type: 'image/jpeg' });
+                let blob: Blob;
+
+                if (preSelectedImage.url.startsWith('data:')) {
+                    // Handle base64 data URLs
+                    const response = await fetch(preSelectedImage.url);
+                    blob = await response.blob();
+                } else {
+                    // Handle regular URLs
+                    const response = await fetch(preSelectedImage.url);
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch image: ${response.status}`);
+                    }
+                    blob = await response.blob();
+                }
+
+                finalImageBefore = new File([blob], `satellite-${preSelectedImage.date}.png`, { type: 'image/png' });
             } catch (error) {
                 console.error('Failed to download satellite image:', error);
                 alert('Failed to download selected satellite image. Please try again.');
@@ -74,7 +87,7 @@ export function NewCaseModal({ isOpen, onClose, initialLat, initialLng, preSelec
             }
         }
 
-        await createCase(formData as any, finalImageBefore, imageAfter);
+        await createCase(formData as any, finalImageBefore || undefined, imageAfter || undefined);
         setIsSubmitting(false);
         onClose();
         router.refresh();

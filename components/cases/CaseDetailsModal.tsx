@@ -51,7 +51,12 @@ export function CaseDetailsModal({ caseData, isOpen, onClose }: CaseDetailsModal
             const result = await analyzeImages(caseData.imageUrlBefore, caseData.imageUrlAfter);
             setAnalysisResult(result);
         } catch (error) {
-            setAnalysisResult("Analysis failed: " + error.message);
+            setAnalysisResult({
+                analysis: "Analysis failed: " + (error as Error).message,
+                severity: "UNKNOWN",
+                confidence: 0,
+                details: null
+            });
         }
         setIsAnalyzing(false);
     };

@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { writeFile } from 'fs/promises';
 import { join } from 'path';
+import { CaseSeverity, CaseStatus } from '@/types';
 
 export async function GET() {
     const db = readDb();
@@ -62,8 +63,8 @@ export async function POST(request: Request) {
             description: description || "",
             latitude,
             longitude,
-            severity: severity || "LOW",
-            status: status || "PENDING",
+            severity: (severity as CaseSeverity) || "LOW",
+            status: (status as CaseStatus) || "PENDING",
             imageUrlBefore,
             imageUrlAfter
         });

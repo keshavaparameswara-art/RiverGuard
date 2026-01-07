@@ -9,8 +9,18 @@ interface SatelliteImage {
     resolution: number;
 }
 
+// Generate a simple base64 encoded placeholder image
+function generateBase64Image(width: number, height: number, text: string): string {
+    // Create a simple SVG as base64
+    const svg = `
+    <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#1e293b"/>
+        <text x="50%" y="50%" font-family="Arial" font-size="24" fill="white" text-anchor="middle" dy=".3em">${text}</text>
+    </svg>`;
+    return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
+}
+
 // Mock satellite image data for demonstration
-// In production, this would call Sentinel Hub, NASA EarthData, or Google Earth Engine APIs
 function getMockSatelliteImages(lat: number, lng: number): SatelliteImage[] {
     const baseDate = new Date();
     const images: SatelliteImage[] = [];
@@ -20,14 +30,16 @@ function getMockSatelliteImages(lat: number, lng: number): SatelliteImage[] {
         const imageDate = new Date(baseDate);
         imageDate.setMonth(baseDate.getMonth() - i);
 
-        // Mock URL - in real implementation, this would be actual satellite image URLs
-        const mockUrl = `https://via.placeholder.com/1024x1024/1e293b/ffffff?text=Satellite+${imageDate.toISOString().split('T')[0]}`;
+        // Generate base64 encoded images instead of external URLs
+        const dateStr = imageDate.toISOString().split('T')[0];
+        const mockUrl = generateBase64Image(1024, 1024, `Satellite ${dateStr}`);
+        const thumbnailUrl = generateBase64Image(256, 256, dateStr);
 
         images.push({
             id: `sat_${i}`,
-            date: imageDate.toISOString().split('T')[0],
+            date: dateStr,
             url: mockUrl,
-            thumbnail: `https://via.placeholder.com/256x256/1e293b/ffffff?text=${imageDate.toISOString().split('T')[0]}`,
+            thumbnail: thumbnailUrl,
             cloudCover: Math.floor(Math.random() * 30), // 0-30% cloud cover
             resolution: 10 // 10m resolution
         });
