@@ -1,0 +1,47 @@
+
+    <svg width="1024" height="1024" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <filter id="terrain-10">
+                <feTurbulence baseFrequency="0.060000000000000005" numOctaves="6" stitchTiles="stitch"/>
+                <feColorMatrix type="saturate" values="0.3"/>
+            </filter>
+            <filter id="clouds-10">
+                <feTurbulence baseFrequency="0.15000000000000002" numOctaves="3" stitchTiles="stitch"/>
+                <feColorMatrix type="matrix" values="1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0.7 0"/>
+            </filter>
+            <radialGradient id="atmosphere-10" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" style="stop-color:#87ceeb;stop-opacity:0.1" />
+                <stop offset="100%" style="stop-color:#000000;stop-opacity:0.3" />
+            </radialGradient>
+            <pattern id="terrain-pattern-10" patternUnits="userSpaceOnUse" width="50" height="50">
+                <rect width="50" height="50" fill="#2d5016"/>
+                <circle cx="25" cy="25" r="15" fill="#4a7c2a" opacity="0.6"/>
+            </pattern>
+        </defs>
+
+        <!-- Base terrain layer -->
+        <rect width="100%" height="100%" fill="url(#terrain-pattern-10)" filter="url(#terrain-10)"/>
+
+        <!-- Water bodies -->
+        <ellipse cx="700" cy="600" rx="80" ry="40" fill="#0f172a" opacity="0.8"/>
+        <ellipse cx="1000" cy="700" rx="60" ry="30" fill="#1e293b" opacity="0.6"/>
+
+        <!-- Urban areas -->
+        <rect x="400" y="500" width="40" height="40" fill="#6b7280" opacity="0.7"/>
+        <rect x="950" y="550" width="35" height="35" fill="#9ca3af" opacity="0.8"/>
+
+        <!-- Cloud layer -->
+        <rect width="100%" height="100%" fill="white" filter="url(#clouds-10)" opacity="0.2"/>
+
+        <!-- Atmospheric effect -->
+        <rect width="100%" height="100%" fill="url(#atmosphere-10)" opacity="0.3"/>
+
+        <!-- Coordinate and date overlay -->
+        <rect x="10" y="10" width="200" height="60" fill="rgba(0,0,0,0.7)" rx="5"/>
+        <text x="20" y="30" font-family="Arial" font-size="14" fill="white">
+            18.1169°, 79.0101°
+        </text>
+        <text x="20" y="50" font-family="Arial" font-size="12" fill="white" opacity="0.8">
+            2025-03-07
+        </text>
+    </svg>

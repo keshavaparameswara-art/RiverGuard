@@ -1,6 +1,19 @@
 {
   "cases": [
     {
+      "title": "case 244",
+      "description": "this is another case",
+      "latitude": 18.14523473041596,
+      "longitude": 78.98018739351559,
+      "severity": "LOW",
+      "status": "PENDING",
+      "imageUrlBefore": "/uploads/before-1767775796532-satellite-2025-12-07.png",
+      "imageUrlAfter": "/placeholder-after.jpg",
+      "id": 4,
+      "createdAt": "2026-01-07T08:49:56.537Z",
+      "updatedAt": "2026-01-07T08:50:18.398Z"
+    },
+    {
       "title": "case 24",
       "description": "this is it",
       "latitude": 21.297734258970337,
@@ -40,7 +53,7 @@
     }
   ],
   "stats": {
-    "pending": 1,
+    "pending": 2,
     "investigating": 0,
     "resolved": 2
   }
