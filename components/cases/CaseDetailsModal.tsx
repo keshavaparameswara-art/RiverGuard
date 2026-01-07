@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/Button';
 import styles from './CaseDetailsModal.module.css';
 import { X, MapPin, Calendar, Activity } from 'lucide-react';
 import { Case } from '@/types';
-import { updateCaseStatus } from '@/lib/api';
+import { updateCaseStatus, analyzeImages } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 
 interface CaseDetailsModalProps {
@@ -16,6 +16,13 @@ interface CaseDetailsModalProps {
 export function CaseDetailsModal({ caseData, isOpen, onClose }: CaseDetailsModalProps) {
     const [status, setStatus] = useState(caseData?.status || 'PENDING');
     const [isUpdating, setIsUpdating] = useState(false);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [analysisResult, setAnalysisResult] = useState<{
+        analysis: string;
+        severity: string;
+        confidence: number;
+        details: any;
+    } | null>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -35,6 +42,18 @@ export function CaseDetailsModal({ caseData, isOpen, onClose }: CaseDetailsModal
             // Force refresh to show new status in list
             window.location.reload();
         }
+    };
+
+    const handleAnalyze = async () => {
+        if (!caseData || !caseData.imageUrlBefore || !caseData.imageUrlAfter) return;
+        setIsAnalyzing(true);
+        try {
+            const result = await analyzeImages(caseData.imageUrlBefore, caseData.imageUrlAfter);
+            setAnalysisResult(result);
+        } catch (error) {
+            setAnalysisResult("Analysis failed: " + error.message);
+        }
+        setIsAnalyzing(false);
     };
 
     if (!isOpen || !caseData) {
@@ -93,14 +112,59 @@ export function CaseDetailsModal({ caseData, isOpen, onClose }: CaseDetailsModal
                     </div>
 
                     <div className={styles.images}>
-                        <div className={styles.imagePlaceholder}>Before Image</div>
-                        <div className={styles.imagePlaceholder}>After Image</div>
+                        <div className={styles.imageContainer}>
+                            <h4>Before Image</h4>
+                            {caseData.imageUrlBefore ? (
+                                <img src={caseData.imageUrlBefore} alt="Before" className={styles.image} />
+                            ) : (
+                                <div className={styles.imagePlaceholder}>No image</div>
+                            )}
+                        </div>
+                        <div className={styles.imageContainer}>
+                            <h4>After Image</h4>
+                            {caseData.imageUrlAfter ? (
+                                <img src={caseData.imageUrlAfter} alt="After" className={styles.image} />
+                            ) : (
+                                <div className={styles.imagePlaceholder}>No image</div>
+                            )}
+                        </div>
                     </div>
+
+                    {analysisResult && (
+                        <div className={styles.analysisResult}>
+                            <h4>AI Analysis Result</h4>
+                            <div className={styles.analysisHeader}>
+                                <span className={`${styles.severityBadge} ${styles[analysisResult.severity.toLowerCase()]}`}>
+                                    Severity: {analysisResult.severity}
+                                </span>
+                                <span className={styles.confidence}>
+                                    Confidence: {(analysisResult.confidence * 100).toFixed(1)}%
+                                </span>
+                            </div>
+                            <p className={styles.analysisText}>{analysisResult.analysis}</p>
+
+                            {analysisResult.details && Object.keys(analysisResult.details).length > 0 && (
+                                <div className={styles.analysisDetails}>
+                                    <h5>Analysis Details:</h5>
+                                    <ul>
+                                        {Object.entries(analysisResult.details).map(([key, value]) => (
+                                            <li key={key}>
+                                                <strong>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:</strong> {String(value)}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 <div className={styles.actions}>
                     <Button variant="ghost" style={{ color: 'var(--color-danger)', borderColor: 'var(--color-danger)' }} onClick={handleDelete} disabled={isUpdating}>
                         Delete Case
+                    </Button>
+                    <Button variant="secondary" onClick={handleAnalyze} disabled={!caseData.imageUrlBefore || !caseData.imageUrlAfter || isAnalyzing}>
+                        {isAnalyzing ? 'Analyzing...' : 'AI Analyze'}
                     </Button>
                     <div style={{ flex: 1 }}></div>
                     <Button variant="secondary" onClick={onClose}>Close</Button>

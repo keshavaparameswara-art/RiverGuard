@@ -95,8 +95,29 @@
     margin-bottom: 2rem;
 }
 
-.imagePlaceholder {
+.imageContainer {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.imageContainer h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.imagePlaceholder {
     height: 150px;
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: var(--radius-md);
@@ -106,6 +127,99 @@
     color: var(--color-text-secondary);
     font-size: 0.875rem;
     border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.analysisResult {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.analysisResult h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    margin: 0 0 0.5rem 0;
+}
+
+.analysisResult p {
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.analysisHeader {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.severityBadge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.severityBadge.high {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--color-danger);
+}
+
+.severityBadge.medium {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+
+.severityBadge.low {
+    background-color: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+}
+
+.severityBadge.unknown {
+    background-color: rgba(156, 163, 175, 0.1);
+    color: #6b7280;
+}
+
+.confidence {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+}
+
+.analysisText {
+    margin-bottom: 1rem;
+}
+
+.analysisDetails {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1rem;
+}
+
+.analysisDetails h5 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 0.5rem 0;
+}
+
+.analysisDetails ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.analysisDetails li {
+    padding: 0.25rem 0;
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+}
+
+.analysisDetails strong {
+    color: var(--color-text-primary);
 }
 
 .actions {

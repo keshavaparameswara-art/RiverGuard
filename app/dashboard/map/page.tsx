@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/Card";
 import styles from "./page.module.css";
 import { useState, useMemo, useEffect } from "react";
 import { NewCaseModal } from "@/components/cases/NewCaseModal";
+import { SatelliteImageModal } from "@/components/map/SatelliteImageModal";
 import dynamic from 'next/dynamic';
 
 // Dynamic import for Leaflet map to avoid SSR issues
@@ -15,6 +16,8 @@ const LeafletMap = dynamic(
 export default function MapPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCoords, setSelectedCoords] = useState<{ lat: number, lng: number } | undefined>(undefined);
+    const [isSatelliteModalOpen, setIsSatelliteModalOpen] = useState(false);
+    const [selectedSatelliteImage, setSelectedSatelliteImage] = useState<any>(null);
 
     const [cases, setCases] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -30,6 +33,12 @@ export default function MapPage() {
 
     const handleMapClick = (lat: number, lng: number) => {
         setSelectedCoords({ lat, lng });
+        setIsSatelliteModalOpen(true);
+    };
+
+    const handleSatelliteImageSelect = (image: any) => {
+        setSelectedSatelliteImage(image);
+        setIsSatelliteModalOpen(false);
         setIsModalOpen(true);
     };
 
@@ -98,9 +107,21 @@ export default function MapPage() {
 
             <NewCaseModal
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setSelectedSatelliteImage(null);
+                }}
                 initialLat={selectedCoords?.lat}
                 initialLng={selectedCoords?.lng}
+                preSelectedImage={selectedSatelliteImage}
+            />
+
+            <SatelliteImageModal
+                isOpen={isSatelliteModalOpen}
+                onClose={() => setIsSatelliteModalOpen(false)}
+                lat={selectedCoords?.lat || 0}
+                lng={selectedCoords?.lng || 0}
+                onImageSelect={handleSatelliteImageSelect}
             />
         </div>
     );

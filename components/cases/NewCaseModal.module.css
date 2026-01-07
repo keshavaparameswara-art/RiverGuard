@@ -71,7 +71,8 @@
 }
 
 .select,
-.textarea {
+.textarea,
+.fileInput {
     width: 100%;
     padding: 0.75rem 1rem;
     border-radius: var(--radius-md);
@@ -84,8 +85,41 @@
 }
 
 .select:focus,
-.textarea:focus {
+.textarea:focus,
+.fileInput:focus {
     border-color: var(--color-accent);
+}
+
+.preSelectedImage {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.selectedImage {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.imageDetails {
+    flex: 1;
+}
+
+.imageDetails p {
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+}
+
+.imageDetails strong {
+    color: var(--color-text-primary);
 }
 
 .textarea {

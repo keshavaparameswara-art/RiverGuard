@@ -18,12 +18,45 @@ export async function getCases(): Promise<Case[]> {
     }
 }
 
-export async function createCase(data: Partial<Case>): Promise<Case | null> {
+export async function analyzeImages(imageUrlBefore: string, imageUrlAfter: string): Promise<{
+    analysis: string;
+    severity: string;
+    confidence: number;
+    details: any;
+}> {
     try {
-        const res = await fetch('/api/cases', {
+        const res = await fetch('/api/analyze', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+            body: JSON.stringify({ imageUrlBefore, imageUrlAfter })
+        });
+        if (!res.ok) throw new Error('Analysis failed');
+        return await res.json();
+    } catch (error) {
+        console.error(error);
+        return {
+            analysis: "Analysis failed: " + (error instanceof Error ? error.message : String(error)),
+            severity: "UNKNOWN",
+            confidence: 0,
+            details: {}
+        };
+    }
+}
+
+export async function createCase(data: Partial<Case>, imageBefore?: File, imageAfter?: File): Promise<Case | null> {
+    try {
+        const formData = new FormData();
+        Object.entries(data).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+                formData.append(key, value.toString());
+            }
+        });
+        if (imageBefore) formData.append('imageBefore', imageBefore);
+        if (imageAfter) formData.append('imageAfter', imageAfter);
+
+        const res = await fetch('/api/cases', {
+            method: 'POST',
+            body: formData
         });
         if (!res.ok) {
             console.warn("API call failed, mocked success for demo.");

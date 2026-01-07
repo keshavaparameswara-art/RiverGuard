@@ -9,14 +9,24 @@ import { X } from 'lucide-react';
 import { createCase } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 
+interface SatelliteImage {
+    id: string;
+    date: string;
+    url: string;
+    thumbnail: string;
+    cloudCover: number;
+    resolution: number;
+}
+
 interface NewCaseModalProps {
     isOpen: boolean;
     onClose: () => void;
     initialLat?: number;
     initialLng?: number;
+    preSelectedImage?: SatelliteImage | null;
 }
 
-export function NewCaseModal({ isOpen, onClose, initialLat, initialLng }: NewCaseModalProps) {
+export function NewCaseModal({ isOpen, onClose, initialLat, initialLng, preSelectedImage }: NewCaseModalProps) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState({
@@ -27,6 +37,8 @@ export function NewCaseModal({ isOpen, onClose, initialLat, initialLng }: NewCas
         severity: 'LOW',
         status: 'PENDING'
     });
+    const [imageBefore, setImageBefore] = useState<File | null>(null);
+    const [imageAfter, setImageAfter] = useState<File | null>(null);
 
     // Update form data when initial coordinates change or modal opens
     // This fixes the issue where subsequent clicks on the map didn't update the modal coordinates
@@ -45,12 +57,27 @@ export function NewCaseModal({ isOpen, onClose, initialLat, initialLng }: NewCas
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
-        // Cast to any to bypass strict literal checks for now, or import types
-        await createCase(formData as any);
+
+        let finalImageBefore = imageBefore;
+
+        // If we have a pre-selected satellite image, download it and convert to File
+        if (preSelectedImage && !imageBefore) {
+            try {
+                const response = await fetch(preSelectedImage.url);
+                const blob = await response.blob();
+                finalImageBefore = new File([blob], `satellite-${preSelectedImage.date}.jpg`, { type: 'image/jpeg' });
+            } catch (error) {
+                console.error('Failed to download satellite image:', error);
+                alert('Failed to download selected satellite image. Please try again.');
+                setIsSubmitting(false);
+                return;
+            }
+        }
+
+        await createCase(formData as any, finalImageBefore, imageAfter);
         setIsSubmitting(false);
         onClose();
         router.refresh();
-        // Force a re-fetch if on the cases page, or let the refresh handle it
         window.location.reload();
     };
 
@@ -110,6 +137,41 @@ export function NewCaseModal({ isOpen, onClose, initialLat, initialLng }: NewCas
                             placeholder="Describe the observation..."
                             value={formData.description}
                             onChange={e => setFormData({ ...formData, description: e.target.value })}
+                        />
+                    </div>
+
+                    <div className={styles.field}>
+                        <label className={styles.label}>Satellite Image Before</label>
+                        {preSelectedImage ? (
+                            <div className={styles.preSelectedImage}>
+                                <img
+                                    src={preSelectedImage.thumbnail}
+                                    alt={`Selected satellite image from ${preSelectedImage.date}`}
+                                    className={styles.selectedImage}
+                                />
+                                <div className={styles.imageDetails}>
+                                    <p><strong>Date:</strong> {new Date(preSelectedImage.date).toLocaleDateString()}</p>
+                                    <p><strong>Cloud Cover:</strong> {preSelectedImage.cloudCover}%</p>
+                                    <p><strong>Resolution:</strong> {preSelectedImage.resolution}m</p>
+                                </div>
+                            </div>
+                        ) : (
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={e => setImageBefore(e.target.files?.[0] || null)}
+                                className={styles.fileInput}
+                            />
+                        )}
+                    </div>
+
+                    <div className={styles.field}>
+                        <label className={styles.label}>Satellite Image After</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={e => setImageAfter(e.target.files?.[0] || null)}
+                            className={styles.fileInput}
                         />
                     </div>
 
