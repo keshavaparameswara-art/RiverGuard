@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { readDb, deleteCase } from '@/lib/db-json';
+import { getCaseById, deleteCase } from '@/lib/db';
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
@@ -8,8 +8,7 @@ export async function GET(
     { params }: { params: Promise<{ id: string }> }
 ) {
     const { id } = await params;
-    const db = readDb();
-    const caseItem = db.cases.find(c => c.id === parseInt(id));
+    const caseItem = await getCaseById(parseInt(id));
 
     if (!caseItem) {
         return NextResponse.json({ error: "Case not found" }, { status: 404 });
@@ -31,15 +30,11 @@ export async function DELETE(
 
     try {
         const { id } = await params;
-        const success = deleteCase(parseInt(id));
-
-        if (!success) {
-            return NextResponse.json({ error: "Case not found" }, { status: 404 });
-        }
+        await deleteCase(parseInt(id));
 
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error(error);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        return NextResponse.json({ error: "Case not found or Internal Server Error" }, { status: 404 });
     }
 }

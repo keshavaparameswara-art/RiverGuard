@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { updateCase } from '@/lib/db-json';
+import { updateCase } from '@/lib/db';
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
@@ -23,15 +23,11 @@ export async function PATCH(
             return NextResponse.json({ error: "Missing status" }, { status: 400 });
         }
 
-        const updated = updateCase(parseInt(id), { status });
-
-        if (!updated) {
-            return NextResponse.json({ error: "Case not found" }, { status: 404 });
-        }
+        const updated = await updateCase(parseInt(id), { status });
 
         return NextResponse.json(updated);
     } catch (error) {
         console.error(error);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        return NextResponse.json({ error: "Case not found or Internal Server Error" }, { status: 404 });
     }
 }

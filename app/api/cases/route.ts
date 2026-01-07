@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { readDb, addCase } from '@/lib/db-json';
+import { getCases, createCase } from '@/lib/db';
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { writeFile } from 'fs/promises';
@@ -7,8 +7,8 @@ import { join } from 'path';
 import { CaseSeverity, CaseStatus } from '@/types';
 
 export async function GET() {
-    const db = readDb();
-    return NextResponse.json(db.cases);
+    const cases = await getCases();
+    return NextResponse.json(cases);
 }
 
 export async function POST(request: Request) {
@@ -39,6 +39,9 @@ export async function POST(request: Request) {
         let imageUrlBefore = "/placeholder-before.jpg";
         let imageUrlAfter = "/placeholder-after.jpg";
 
+        // TODO: Implement file storage for Vercel (e.g., Vercel Blob)
+        // File saving disabled for Vercel deployment
+        /*
         // Save images
         if (imageBefore) {
             const bytes = await imageBefore.arrayBuffer();
@@ -57,8 +60,9 @@ export async function POST(request: Request) {
             await writeFile(path, buffer);
             imageUrlAfter = `/uploads/${filename}`;
         }
+        */
 
-        const newCase = addCase({
+        const newCase = await createCase({
             title,
             description: description || "",
             latitude,
