@@ -24,9 +24,10 @@ interface NewCaseModalProps {
     initialLat?: number;
     initialLng?: number;
     preSelectedImage?: SatelliteImage | null;
+    onSuccess?: () => void;
 }
 
-export function NewCaseModal({ isOpen, onClose, initialLat, initialLng, preSelectedImage }: NewCaseModalProps) {
+export function NewCaseModal({ isOpen, onClose, initialLat, initialLng, preSelectedImage, onSuccess }: NewCaseModalProps) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState({
@@ -90,8 +91,8 @@ export function NewCaseModal({ isOpen, onClose, initialLat, initialLng, preSelec
         await createCase(formData as any, finalImageBefore || undefined, imageAfter || undefined);
         setIsSubmitting(false);
         onClose();
+        onSuccess?.();
         router.refresh();
-        window.location.reload();
     };
 
     return (

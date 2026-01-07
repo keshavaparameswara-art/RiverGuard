@@ -42,6 +42,15 @@ export default function MapPage() {
         setIsModalOpen(true);
     };
 
+    const handleCaseCreated = () => {
+        // Refresh cases
+        import('@/lib/api').then(({ getCases }) => {
+            getCases().then(data => {
+                setCases(data);
+            });
+        });
+    };
+
     // Transform cases to markers
     const markers = useMemo(() => cases.map(c => ({
         // Use random offset for demo if lat/lng missing, or real lat/lng if available.
@@ -114,6 +123,7 @@ export default function MapPage() {
                 initialLat={selectedCoords?.lat}
                 initialLng={selectedCoords?.lng}
                 preSelectedImage={selectedSatelliteImage}
+                onSuccess={handleCaseCreated}
             />
 
             <SatelliteImageModal
