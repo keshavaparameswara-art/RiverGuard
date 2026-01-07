@@ -10,9 +10,10 @@ const LeafletMap = dynamic(
 import { useState, useEffect } from 'react';
 import { getRegionCoords } from '@/lib/regions';
 
-export default function MapPreviewWrapper({ interactive = true }: { interactive?: boolean }) {
+export default function MapPreviewWrapper({ interactive = true, onMapClick }: { interactive?: boolean, onMapClick?: (lat: number, lng: number) => void }) {
     const [center, setCenter] = useState<[number, number]>([28.6139, 77.2090]);
     const [markers, setMarkers] = useState<any[]>([]);
+    const [mapLoaded, setMapLoaded] = useState(false);
 
     useEffect(() => {
         // Fetch cases to show on map
@@ -47,6 +48,11 @@ export default function MapPreviewWrapper({ interactive = true }: { interactive?
         return () => window.removeEventListener('storage', updateFromSettings);
     }, []);
 
+    const handleMapClick = (lat: number, lng: number) => {
+        if (!mapLoaded) return;
+        onMapClick?.(lat, lng);
+    };
+
     return (
         <LeafletMap
             key={center.join(',')} // Force re-render on move
@@ -54,6 +60,8 @@ export default function MapPreviewWrapper({ interactive = true }: { interactive?
             zoom={11}
             markers={markers}
             interactive={interactive}
+            onMapClick={handleMapClick}
+            onLoad={() => setMapLoaded(true)}
         />
     );
 }

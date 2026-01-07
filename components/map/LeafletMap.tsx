@@ -21,6 +21,7 @@ interface LeafletMapProps {
     markers?: Array<{ lat: number; lng: number; title: string }>;
     onMapClick?: (lat: number, lng: number) => void;
     interactive?: boolean;
+    onLoad?: () => void;
 }
 
 function ClickHandler({ onMapClick }: { onMapClick?: (lat: number, lng: number) => void }) {
@@ -37,11 +38,15 @@ export default function LeafletMap({
     zoom = 13,
     markers = [],
     onMapClick,
-    interactive = true
+    interactive = true,
+    onLoad
 }: LeafletMapProps) {
     // Leaflet needs window, so we ensure it only mounts on client
     const [mounted, setMounted] = useState(false);
-    useEffect(() => { setMounted(true); }, []);
+    useEffect(() => { 
+        setMounted(true); 
+        onLoad?.();
+    }, []);
 
     if (!mounted) return <div style={{ height: '100%', background: '#0f172a' }}>Loading Map...</div>;
 

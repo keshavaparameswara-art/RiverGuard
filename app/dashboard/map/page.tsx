@@ -4,7 +4,6 @@ import { Card } from "@/components/ui/Card";
 import styles from "./page.module.css";
 import { useState, useMemo, useEffect } from "react";
 import { NewCaseModal } from "@/components/cases/NewCaseModal";
-import { SatelliteImageModal } from "@/components/map/SatelliteImageModal";
 import dynamic from 'next/dynamic';
 
 // Dynamic import for Leaflet map to avoid SSR issues
@@ -16,29 +15,18 @@ const LeafletMap = dynamic(
 export default function MapPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCoords, setSelectedCoords] = useState<{ lat: number, lng: number } | undefined>(undefined);
-    const [isSatelliteModalOpen, setIsSatelliteModalOpen] = useState(false);
-    const [selectedSatelliteImage, setSelectedSatelliteImage] = useState<any>(null);
+    const [mapLoaded, setMapLoaded] = useState(false);
 
     const [cases, setCases] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        import('@/lib/api').then(({ getCases }) => {
-            getCases().then(data => {
-                setCases(data);
-                setIsLoading(false);
-            });
-        });
+        setIsModalOpen(false);
     }, []);
 
     const handleMapClick = (lat: number, lng: number) => {
+        if (!mapLoaded) return;
         setSelectedCoords({ lat, lng });
-        setIsSatelliteModalOpen(true);
-    };
-
-    const handleSatelliteImageSelect = (image: any) => {
-        setSelectedSatelliteImage(image);
-        setIsSatelliteModalOpen(false);
         setIsModalOpen(true);
     };
 
@@ -103,6 +91,7 @@ export default function MapPage() {
                         zoom={12}
                         markers={markers}
                         onMapClick={handleMapClick}
+                        onLoad={() => setMapLoaded(true)}
                     />
                 </div>
             </Card>
@@ -118,20 +107,10 @@ export default function MapPage() {
                 isOpen={isModalOpen}
                 onClose={() => {
                     setIsModalOpen(false);
-                    setSelectedSatelliteImage(null);
                 }}
                 initialLat={selectedCoords?.lat}
                 initialLng={selectedCoords?.lng}
-                preSelectedImage={selectedSatelliteImage}
                 onSuccess={handleCaseCreated}
-            />
-
-            <SatelliteImageModal
-                isOpen={isSatelliteModalOpen}
-                onClose={() => setIsSatelliteModalOpen(false)}
-                lat={selectedCoords?.lat || 0}
-                lng={selectedCoords?.lng || 0}
-                onImageSelect={handleSatelliteImageSelect}
             />
         </div>
     );
